@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<!--
+	NOTES:
+	1. All tokens are represented by '$' sign in the template.
+	2. You can write your code only wherever mentioned.
+	3. All occurrences of existing tokens will be replaced by their appropriate values.
+	4. Blank lines will be removed automatically.
+	5. Remove unnecessary comments before creating your template.
+-->
+<html>
+<head>
+<meta charset="UTF-8">
+   <meta name="viewport" content="user-scalable=0">
+       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<title>rompecabezas</title>
+<!-- write your code here -->
+    <script src="createjs.js"></script>
+
+    <script src="jquery-3.1.1.js"></script>
+
+
+<style>
+
+/*
+#seleccion{
+  width:100%;
+  height:100%;
+  position:fixed;
+  z-index:9;
+}*/
+
+#seleccion{
+  display:none;
+}
+#seleccion div{
+     position: fixed;
+    width: 33%;
+    background-repeat: no-repeat;
+    height: 20%;
+    left: 33%;
+    z-index: 9;
+    background-size: contain;
+}
+#seleccion div.izq{
+  bottom:51%;
+  background-image:url(facil.png);
+
+}
+
+#seleccion div.der{
+  top:51%;
+    background-image:url(dificil.png);
+
+}
+
+#log{
+  position:fixed;
+  z-index:99999999999999999999999;
+  width:25%;
+  height:50%;
+  background:rgba(255,255,255,0.6);
+  color:black;
+  overflow-y: auto;
+
+  padding:2%;
+  display:none;
+}
+
+  #loading {
+            display: block;
+        }
+
+        #empezar img {
+            width: 50%;
+            left: 50%;
+            top: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+
+        #loading,
+        #video,
+        #empezar {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+
+            height: 100%;
+            z-index: 9;
+            background-repeat: no-repeat;
+            display: block; /* ///////////////////////////// */
+            background-size: cover;
+            background-color: black;
+            /*background-image: url();*/
+            background-position: center;
+
+        }
+
+        #loading {
+            background-image: url(loading2.jpeg);
+               z-index: 100;
+        }
+
+        #empezar {
+            background-color: #005024;
+            z-index: 101;
+            display: none;
+        }
+
+        #empezar:hover {
+            cursor: pointer;
+        }
+
+        #video {
+            display: none;
+            z-index: 99;
+            background: black !important;
+        }
+
+        #soloLandscape {
+
+            background-size: 30%;
+            background-color: #007441;
+            background-image: url(flip_phone_icon.png);
+            background-position: center;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+
+        @media(orientation:portrait) {
+
+            #soloLandscape {
+                display: block;
+            }
+        }
+
+      
+
+
+
+#logo{
+width: 15%;
+    height: 16%;
+    z-index: 99;
+    display: block;
+    bottom: 0px;
+    right: 0px;
+    background-image: url(logoUni2.png);
+    background-size: contain;
+    position: fixed;
+    background-repeat: no-repeat;
+    background-position: right bottom;
+}
+#cerrar{
+    position: fixed;
+    right: 2%;
+    top: 2%;
+    display:none;
+    background-image: url(botonFlechaverde.png);
+    background-size: contain;
+    width: 12%;
+    height: 12%;
+    z-index: 9;
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+
+body{
+  background-image:url(fondo.jpg);
+      background-size: 90%;
+
+}
+
+canvas{
+   width: 90%;
+  height: 90%;
+  box-shadow: 0px 0px 3vw rgba(0,0,0,0.7);
+	position: fixed;
+  left:5%;
+  top:5%;
+  background:black;
+  z-index:8;
+}
+
+canvas.fs{
+   width: 100%;
+  height: 100%;
+  box-shadow: 0px 0px 3vw rgba(0,0,0,0.7);
+  position: fixed;
+  left:0%;
+  top:0%;
+  background:black;
+  z-index:8;
+}
+
+        *{
+              touch-action:none;
+        }
+
+        body,
+        html {
+            margin: 0 auto;
+            background-color:black;
+            height:100.1%;
+        }
+
+</style>
+
+<script>
+	URL_IMG="img.jpg"; //la img tiene q ser de 1136x640
+
+
+
+	var ancho=1920;
+	var alto=1080;
+	
+	var velTransicion=200;
+    var cantColumnas=4;
+    var cantFilas=3;
+  
+var i,j;
+    var anchoPieza;
+    var altoPieza;
+
+    var arrPiezas;
+
+
+var cualEstaAgarrada=null;
+    
+function loggear(a){
+  $("#log").append("<br> ## "+a);
+}
+
+var vidReadyState=null;
+
+function init(){
+
+    loggear("init");
+            video = document.createElement('video');
+            video.onended = setup;
+            video.src = '5intro.mp4';
+            video.id = "video";
+
+            loggear("cargando video intro")
+
+         //   video.addEventListener("loadeddata",videoCargo);
+             
+
+    //video.oncanplaythrough= videoCargo;
+   loggear("esperando 8s")
+  setTimeout(videoCargo, 8000); //espero 8 segundos y sale.. y a la mierda mal
+
+            $("#cerrar").click(cerrar);
+
+    stage = new createjs.Stage("canvas");
+    stage.enableMouseOver(100)
+    createjs.Touch.enable(stage);
+    createjs.Ticker.addEventListener("tick", gameLoop);
+    
+    container=new createjs.Container();
+    //container.width=0.9*ancho;
+    //container.height=0.9*alto;
+    container.x=0;
+    container.y=0;
+    container.scaleX=container.scaleY=1
+   
+  // Display an image
+ // var img = new createjs.Bitmap(URL_IMG);
+  //stage.addChild(img);
+
+
+
+
+
+
+
+
+//	agregarMarco();
+
+   // container.addEventListener("pressmove", pressMove);
+}
+
+function videoCargo(){
+  // loggear(video.src+" can play through");
+loggear("video cargo")
+  //      video.removeEventListener("loadeddata",videoCargo);
+      $("#empezar").click(clickEmpezar); //click;
+
+     $("#empezar").show();
+
+
+            
+}
+
+function clickEmpezar(){
+
+                $("#empezar, #loading").hide();
+                musica = new Audio('musica.mp3');
+                musica.volume = 0.3;
+                musica.muted = true;
+                musica.currentTime=0.1;
+                setTimeout(function() {
+                    $("#empezar").hide();
+                }, 300)
+                musica.loop = true;
+                musica.addEventListener('ended', function() {
+                    this.currentTime = 0.1;
+                    this.play();
+                }, false);
+
+                musica.play();
+                video.play();   
+                //video.oncanplay
+                //  setTimeout(setup, video.duration*1000*1.2); //20% de changui
+                videocjs = new createjs.Bitmap(video);
+     
+
+              stage.update();
+
+                stage.addChild(videocjs);
+
+
+            
+}
+
+function ponervideofinal(){
+    loggear("funcion poner video final");
+              video.play();
+              $("#loading").hide(); 
+              stage.removeAllChildren();
+              stage.addChild(videocjs);
+              musica.muted = true;
+              musica.pause();
+              $("canvas").addClass("fs");
+              $("#cerrar, #logo").hide();
+              stage.update();
+}
+
+
+  function cerrar() {
+
+      console.log("cerrar");
+      loggear("cerrar")
+
+      $("#loading").show(); 
+
+      setTimeout(ponervideofinal, 5000);
+       loggear("video final.. esperando");
+
+
+
+     video.onended = function() {
+          video.webkitExitFullscreen();
+         console.log("termino el video de cierre");
+          loggear("termino el video de cierre")
+     }
+ } //cerrar
+
+function setup(){
+  musica.currentTime=0.1;
+  $("#empezar, #canvas").hide();
+  $("#cerrar, #logo").show();
+  $("canvas").removeClass("fs");
+
+  video.removeEventListener('ended', setup);
+
+     video.webkitExitFullscreen();
+
+loggear("setup");
+
+  video.src = "5final.mp4"; //desde aca va argando el siguiente video
+
+loggear( "cargando video final");
+
+
+            stage.removeChild(videocjs);
+            canvas.addEventListener("dblclick", function(q) {
+                console.log("canvas dblclick")
+                q.preventDefault();
+                q.stopPropagation();
+            })
+
+            musica.muted=false;
+            console.log("setup")
+
+
+            $("#seleccion").show();
+            $("#logo, #cerrar").hide();
+
+    
+
+
+}
+
+function botonDificil(){
+    $("#seleccion").hide();
+              cargarPiezas(3,4);
+                $("#canvas,#logo, #cerrar").show();
+}
+
+function botonFacil(){
+   $("#seleccion").hide();
+              cargarPiezas(2,3);
+                $("#canvas, #logo, #cerrar").show();
+}
+
+function cargarPiezas(a,b){
+
+
+  arrPiezas=new Array(a);
+    for(i=0;i<a;i++){
+      arrPiezas[i]=new Array(b);
+    }
+
+
+
+ anchoPieza=ancho/b;
+ altoPieza=alto/a;
+
+  for(i=0;i<a;i++){
+    for(j=0;j<b;j++){
+   arrPiezas[i][j] = new createjs.Bitmap(URL_IMG);
+   arrPiezas[i][j].cursor="pointer";
+   //  arrPiezas[i][j].scaleX=arrPiezas[i][j].scaleY=0.6
+      arrPiezas[i][j].sourceRect= new createjs.Rectangle(j*anchoPieza,i*altoPieza,ancho/b,alto/a);
+
+      arrPiezas[i][j].supX=j*anchoPieza;
+      arrPiezas[i][j].supY=i*altoPieza;
+   
+      arrPiezas[i][j].addEventListener("click", clickPiezas);   
+    
+
+    }
+  }
+
+
+  arrPiezas=shuffle(arrPiezas);
+  for(i=0;i<arrPiezas.length;i++){
+    arrPiezas[i]=shuffle(arrPiezas[i]);
+  }
+
+
+
+    for(i=0;i<arrPiezas.length;i++){
+      for(j=0;j<arrPiezas[i].length;j++){
+         arrPiezas[i][j].x=j*anchoPieza;
+           arrPiezas[i][j].y=i*altoPieza;
+           console.log( i,j,arrPiezas[i][j].x, arrPiezas[i][j].y)
+        container.addChild(arrPiezas[i][j]);
+      }
+
+    }
+    
+  
+
+ 
+
+  stage.addChild(container);
+
+}
+
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+
+
+
+function clickPiezas(evt){
+  
+
+    var target = evt.target;
+
+    if(cualEstaAgarrada==null){
+    	cualEstaAgarrada=target;
+    
+    }else{
+    //	console.log(target.i,target.j);
+    //	console.log(cualEstaAgarrada.i, cualEstaAgarrada.j)
+    	tempx=target.x;
+    	tempy=target.y;
+    	container.setChildIndex( target, container.getNumChildren()-1);
+    	createjs.Tween.get(target).to({x:cualEstaAgarrada.x,y:cualEstaAgarrada.y}, velTransicion)
+
+
+    	container.setChildIndex( cualEstaAgarrada, container.getNumChildren()-1);
+    	createjs.Tween.get(cualEstaAgarrada).to({x:tempx,y:tempy}, velTransicion);
+    	cualEstaAgarrada=null;
+    	setTimeout(function(){
+    		if(chequearGanador()){
+    			loggear("ganaste");
+          console.log("ganaste")
+          setTimeout(cerrar,1000);
+    		}
+    	},velTransicion*1.5+50);
+
+    }
+
+
+
+}
+function contarItemsArray(arrPiezas){
+  c=0;
+ for(i=0;i<arrPiezas.length;i++){
+   c+=  arrPiezas[i].length;  
+  }
+  return c;
+
+}
+
+function chequearGanador(){
+var checkCount=0;
+	console.log("chequearGanador")
+	for(i=0;i<arrPiezas.length;i++){
+		for(j=0;j<arrPiezas[i].length;j++){
+			if(arrPiezas[i][j].x==arrPiezas[i][j].supX && arrPiezas[i][j].y==arrPiezas[i][j].supY){
+				checkCount++;
+			}
+		}
+	}
+
+	if(checkCount== contarItemsArray(arrPiezas)){
+		//alert("ganaste");
+		return true;
+	}else{
+		return false;
+	}
+}
+
+function gameLoop(evt) {
+
+         try{
+                    if(videocjs.scaleX!=1920 / video.videoWidth){
+                      videocjs.scaleX = videocjs.scaleY = 1920 / video.videoWidth;
+                     console.log("ok!! videocjs.scaleX")
+                  }
+                }catch(e){}
+
+
+    stage.update();
+}
+
+</script>
+<!-- write your code here -->
+</head>
+<body onload="init();" style="margin:0px;">
+<div id="log"></div>
+<div id="seleccion">
+  <div class="izq" onclick="botonFacil()"></div>
+  <div class="der" onclick="botonDificil()"></div>
+
+</div>
+
+    <div id="soloLandscape"></div>
+<div id="cerrar"></div>
+
+    <div id="empezar"><img src="comenzar_verde.gif"></div>
+
+    <div id="loading"></div>
+
+  <div id="logo"></div>
+
+
+		<canvas id="canvas" class="fs" width="1920" height="1080" ></canvas>
+
+
+</body>
+</html>

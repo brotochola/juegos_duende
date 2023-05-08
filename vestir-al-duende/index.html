@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  
+
+  <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, user-scalable=0, minimal-ui">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <title>Navidad Magica en Unicenter</title>
+    <!-- write your code here -->
+       <script src="jquery-3.1.1.js?1507918940927"></script>
+
+   <script src="createjs.min.js?1507918940927"></script>
+    <script src="vestir_al_duende.js?1507918940927"></script>
+
+    <script src="fb.js?15089540927"></script>
+    <style>
+
+     
+         #loading{
+         	display:block;
+         }
+
+        #empezar img{
+        	width:50%;
+        	left: 50%;
+    top: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+        }
+
+
+
+#logo{
+width: 15%;
+    height: 16%;
+    z-index: 99;
+    display: block;
+    bottom: 0px;
+    right: 0px;
+    background-image: url(logoUni2.png);
+    background-size: contain;
+    position: fixed;
+    background-repeat: no-repeat;
+    background-position: right bottom;
+}
+        #loading,
+        #video , #empezar{
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+          
+            height: 100%;
+            z-index: 9;
+            background-repeat: no-repeat;
+            display: block;
+            background-size: cover;
+            background-color: black;
+            /*background-image: url();*/
+            background-position: center;
+        }
+
+
+        video{
+        	display:none;
+        }
+  #loading     {
+        	  background-image: url(loading2.jpeg);
+        }
+        #empezar{
+        	   background-color: #005024;
+        	   z-index:100;
+        	   display:none;
+        }
+
+        #video{
+        	display:none;
+        	z-index:99;
+        	background: black !important;
+        }
+
+        #soloLandscape {
+
+            background-size: 30%;
+            background-color: #007441;
+            background-image: url(flip_phone_icon.png);
+            background-position: center;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+
+        @media(orientation:portrait) {
+
+            #soloLandscape {
+                display: block;
+            }
+        }
+
+
+        #col,
+        #col2 {
+            position: fixed;
+
+            background: transparent;
+            color: transparent;
+            border: none;
+            border: none;
+            z-index: 4;
+            opacity: 1;
+
+            font-size: 0px;
+            border-radius: 100%;
+
+        }
+
+        video::-internal-media-controls-download-button {
+    display:none;
+}
+
+video::-webkit-media-controls-enclosure {
+    overflow:hidden;
+}
+
+video::-webkit-media-controls-panel {
+    width: calc(100% + 30px); /* Adjust as needed */
+}
+
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            background: black;
+            z-index:8;
+
+        }
+
+        *{
+              touch-action:none;
+        }
+
+        body,
+        html {
+            margin: 0 auto;
+            background-color:black;
+            height:100.1%;
+        }
+    </style>
+
+
+
+</head>
+
+<body onload="init();" style="margin:0px;">
+    <div id="soloLandscape"></div>
+
+
+     <div id="empezar"><img src="comenzar_verde.gif"></div>
+
+  <div id="logo"></div>
+
+
+    <div id="loading"></div>
+
+
+
+    <canvas id="canvas" width="1136" height="640"></canvas>
+
+<script src="vestirAlDuendeJuego.js?fd"></script>
+</body>
+
+</html>

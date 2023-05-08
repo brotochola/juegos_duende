@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<!--
+	NOTES:
+	1. All tokens are represented by '$' sign in the template.
+	2. You can write your code only wherever mentioned.
+	3. All occurrences of existing tokens will be replaced by their appropriate values.
+	4. Blank lines will be removed automatically.
+	5. Remove unnecessary comments before creating your template.
+-->
+<html>
+<head>
+    <meta name="viewport" content="user-scalable=0"/>
+   
+
+     
+
+  <style>
+
+
+
+#seleccion{
+  display:none;
+}
+#seleccion div{
+border-radius: 16px;
+    border: 6px solid #CF5234;
+    box-sizing: border-box;
+    position: fixed;
+    width: 30%;
+    background-repeat: no-repeat;
+    height: 37%;
+    top: 31%;
+    z-index: 9;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0px 0px 13px rgba(0,0,0,0.5)
+}
+#seleccion div:hover{
+  cursor: pointer;
+}
+#seleccion div.izq{
+  right:51%;
+  background-image:url(dib1.jpg);
+
+}
+
+#seleccion div.der{
+  left:51%;
+    background-image:url(dib2.jpg);
+
+}
+
+#loading {
+            display: block;
+        }
+
+        #empezar img {
+            width: 50%;
+            left: 50%;
+            top: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+
+        #loading,
+        #video,
+        #empezar {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+
+            height: 100%;
+            z-index: 9;
+            background-repeat: no-repeat;
+            display: block; /* ///////////////////////////// */
+            background-size: cover;
+            background-color: black;
+            /*background-image: url();*/
+            background-position: center;
+
+        }
+
+        #loading {
+            background-image: url(loading2.jpeg);
+               z-index: 100;
+        }
+
+        #empezar {
+            background-color: #005024;
+            z-index: 101;
+            display: none;
+        }
+
+        #empezar:hover {
+            cursor: pointer;
+        }
+
+        #video {
+            display: none;
+            z-index: 99;
+            background: black !important;
+        }
+
+        #soloLandscape {
+
+            background-size: 30%;
+            background-color: #007441;
+            background-image: url(flip_phone_icon.png);
+            background-position: center;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+
+        @media(orientation:portrait) {
+
+            #soloLandscape {
+                display: block;
+            }
+        }
+
+      
+
+
+
+#logo{
+width: 15%;
+    height: 16%;
+    z-index: 99;
+    display: block;
+    bottom: 0px;
+    right: 0px;
+    background-image: url(logoUni2.png);
+    background-size: contain;
+    position: fixed;
+    background-repeat: no-repeat;
+    background-position: right bottom;
+}
+#cerrar{
+    position: fixed;
+    right: 2%;
+    top: 2%;
+    display:none;
+    background-image: url(botonFlechaverde.png);
+    background-size: contain;
+    width: 12%;
+    height: 12%;
+    z-index: 9;
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+
+
+body{
+    
+
+  background-image:url(fondo.jpg);
+      background-size: 90%;
+
+}
+
+#canvas{
+   width: 90%;
+  height: 90%;
+  box-shadow: 0px 0px 3vw rgba(0,0,0,0.7);
+  position: fixed;
+  left:5%;
+  top:5%;
+  background:black;
+  z-index:8;
+}
+
+#canvas.fs{
+   width: 100%;
+  height: 100%;
+  box-shadow: 0px 0px 3vw rgba(0,0,0,0.7);
+  position: fixed;
+  left:0%;
+  top:0%;
+  background:black;
+  z-index:8;
+}
+   #col,
+        #col2 {
+            position: fixed;
+
+            background: transparent;
+            color: transparent;
+            border: none;
+            border: none;
+            z-index: 4;
+            opacity: 1;
+
+            font-size: 0px;
+            border-radius: 100%;
+
+        }
+
+
+        *{
+              touch-action:none;
+        }
+
+        body,
+        html {
+            margin: 0 auto;
+            background-color:black;
+            height:100.1%;
+        }
+
+
+</style>
+
+<meta charset="UTF-8">
+<meta name="authoring-tool" content="Adobe_Animate_CC">
+<title>pintar </title>
+<!-- write your code here -->
+  
+    <script src="jquery-3.1.1.js"></script>
+    <script src="jscolor.min.js"></script>
+
+    <script src="createjs.js"></script>
+    <script src="pintarDuende.js?151087832293"></script>
+     <script src="fb.js"></script>
+
+<script>
+
+
+  var ancho=1136;
+  var alto=640;
+  var video, videocjs;
+  var color="#ff0000";
+        var server = "server/";
+
+
+
+var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
+var obj,picker;
+function init() {
+    picker = new jscolor(document.getElementById("col"));
+      window.addEventListener("resize", verOrientacion, false);
+
+
+       video = document.createElement('video');
+            video.onended = setup;
+            video.src = '6intro.mp4';
+            video.id = "video";
+
+
+
+	canvas = document.getElementById("canvas");
+	anim_container = document.getElementById("animation_container");
+	dom_overlay_container = document.getElementById("dom_overlay_container");
+
+
+            images = images || {};
+            var loader = new createjs.LoadQueue(false);
+            loader.addEventListener("fileload", handleFileLoad);
+            loader.addEventListener("complete", handleComplete);
+            loader.loadManifest(lib.properties.manifest);
+
+}
+
+     function handleFileLoad(evt) {
+            if (evt.item.type == "image") {
+                images[evt.item.id] = evt.result;
+            }
+        }
+
+function handleComplete(evt) {
+  //This function is always called, irrespective of the content. You can use the variable "stage" after it is created in token create_stage.
+            var queue = evt.target;
+            var ssMetadata = lib.ssMetadata;
+            for (i = 0; i < ssMetadata.length; i++) {
+                ss[ssMetadata[i].name] = new createjs.SpriteSheet({
+                    "images": [queue.getResult(ssMetadata[i].name)],
+                    "frames": ssMetadata[i].frames
+                })
+            }
+
+
+
+	stage = new createjs.Stage(canvas);
+  createjs.Touch.enable(stage, true, false);
+
+	stage.addChild(exportRoot);
+	stage.enableMouseOver();		
+	createjs.Ticker.setFPS(lib.properties.fps);
+	createjs.Ticker.addEventListener("tick", gameLoop);
+
+  $("#empezar").show();
+            $("#empezar").click(clickEmpezar) //click;
+       
+
+
+
+
+
+}
+
+    function gameLoop(e){
+            
+                try{
+                    if(videocjs.scaleX!=1136 / video.videoWidth){
+                      videocjs.scaleX = videocjs.scaleY = 1136 / video.videoWidth;
+                     console.log("ok!! videocjs.scaleX")
+                  }
+                }catch(e){}
+              
+        stage.update();
+    }
+
+
+function clickEmpezar(){
+
+                $("#empezar, #loading").hide();
+                musica = new Audio('musica.mp3');
+                musica.volume = 0.3;
+                musica.muted = true;
+                setTimeout(function() {
+                    $("#empezar").hide();
+                }, 300)
+                musica.loop = true;
+                musica.addEventListener('ended', function() {
+                    this.currentTime = 0.1;
+                    this.play();
+                }, false);
+
+                musica.play();
+                video.play();   
+                //  setTimeout(setup, video.duration*1000*1.2); //20% de changui
+                videocjs = new createjs.Bitmap(video);
+     
+
+              stage.update();
+
+                stage.addChild(videocjs);
+
+
+           
+}
+
+var dibujo;
+
+function botonDificil(){  
+      dibujo=new lib.dib2();
+        cargarDibujo();
+}
+
+function botonFacil(){
+      dibujo=new lib.dib1(); 
+      cargarDibujo();
+}
+
+var botonera, picker; 
+
+function cargarDibujo(){
+   $("#seleccion").hide();
+  $("#canvas, #logo, #cerrar").show();
+  stage.addChild(dibujo);
+  botonera=new lib.botonera();
+  stage.addChild(botonera);
+  dibujo.contorno.name="contorno";
+
+  $("#cerrar").click(cerrar);
+
+botonera.bajar.addEventListener("mousedown", function(e){
+  e.preventDefault();
+  e.stopPropagation();
+  bajar();
+});
+botonera.compartir.addEventListener("mousedown", function(e){
+  e.preventDefault();
+  e.stopPropagation();
+  compartir();
+});
+
+    botonera.color.addEventListener("mousedown", function() {
+        verOrientacion();
+               console.log("click boton color");
+                  setTimeout(function() {
+                    picker.show();
+                }, 50);
+            });
+
+
+ stage.addEventListener("dblclick", function(e){
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+    stage.addEventListener("mousedown", function(e){
+  
+      x=e.stageX;
+      y=e.stageY;
+      obj=stage.getObjectsUnderPoint(x,y)[0];
+      if(obj.parent.name!="contorno")  try{
+        obj.graphics._fill.style=color;
+      } catch(e){
+        console.log(e)
+      }
+   
+    });
+
+}
+
+
+
+function setup(){
+
+  video.removeEventListener('ended', setup);
+  $("canvas").removeClass("fs");
+            stage.enableMouseOver();
+            video.webkitExitFullscreen();
+            video.src = "6final.mp4"; //desde aca va argando el siguiente video
+            stage.removeChild(videocjs);
+            canvas.addEventListener("dblclick", function(q) {
+                console.log("canvas dblclick")
+                q.preventDefault();
+                q.stopPropagation();
+            })
+
+    musica.muted=false;
+       musica.currentTime=0.1;
+    console.log("setup")
+
+
+        document.getElementById("col").addEventListener("input", function() {
+             color = $("#col").val();              
+          }, false);
+
+    $("#seleccion, #logo").show();
+  
+  $("#empezar, #canvas, #cerrar").hide();
+
+
+
+
+
+}
+
+ function verOrientacion(){
+            if(window.innerWidth>window.innerHeight){
+            //es landscape
+                orientacion="landscape";
+            }else{
+                orientacion="portrait";
+            }
+
+            try{
+                     document.getElementById("col").style.left = Math.floor(botonera.color.x*100/ancho+5)+"%";
+              document.getElementById("col").style.top = Math.floor(botonera.color.y *100/alto)+ "%";
+         
+        }catch(e){
+            console.log(e)
+        }
+
+       
+
+
+  } //fun verOrientacion
+
+          function cambioDeColor() {
+            console.log("cambio de color")
+            color = picker.toRGBString();
+            picker.hide();
+            goma=false;
+        }
+
+  function cerrar() {
+    $("#logo, #cerrar").hide();
+  $("canvas").addClass("fs");
+            console.log("cerrar");
+            
+            video.onended = function() {
+                video.webkitExitFullscreen();
+                console.log("termino el video de cierre");
+            }
+
+            
+     stage.removeAllChildren();
+            stage.addChild(videocjs);
+    
+
+            //  createjs.Sound.stop("musica");
+            //musica.autoplay=false;
+
+            musica.muted = true;
+            musica.pause();
+            video.play();
+        
+        
+
+              stage.update();
+
+        }
+
+
+
+</script>
+<!-- write your code here -->
+</head>
+<body onload="init();" style="margin:0px;">
+
+<div id="seleccion">
+  <div class="izq" onclick="botonFacil()"></div>
+  <div class="der" onclick="botonDificil()"></div>
+
+</div>
+
+    <div id="soloLandscape"></div>
+<div id="cerrar"></div>
+
+    <div id="empezar"><img src="comenzar_verde.gif"></div>
+
+    <div id="loading"></div>
+
+  <div id="logo"></div>
+
+
+		<canvas id="canvas" width="1136" height="640" class="fs" ></canvas>
+    <input class="jscolor2" id="col" name="col" onchange="cambioDeColor()"></button>
+    
+
+</body>
+</html>

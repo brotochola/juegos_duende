@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<!--
+	NOTES:
+	1. All tokens are represented by '$' sign in the template.
+	2. You can write your code only wherever mentioned.
+	3. All occurrences of existing tokens will be replaced by their appropriate values.
+	4. Blank lines will be removed automatically.
+	5. Remove unnecessary comments before creating your template.
+-->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Laberinto Unicenter</title>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<!-- write your code here -->
+<script src="js/jquery-3.1.1.js"></script>
+<script src="js/createjs.js"></script>
+<script src="js/stringify.js"></script>
+<script src="js/grid.js?dfdffvvdvh"></script>
+<script src="js/matematicas.js?dfddffvvvh"></script>
+
+
+<script src="laberintoDinos.js?ddffdfdfghff"></script>
+
+<script src="js/codigoDelJuego.js?dfddffvvvh"></script>
+
+  <meta charset="utf-8">
+
+<style>
+    @font-face {
+    font-family: Baloo;
+    src: url(baloo.ttf);
+}
+
+#logo{
+width: 15%;
+    height: 16%;
+    z-index: 99;
+    display: block;
+    bottom: 0px;
+    right: 0px;
+    background-image: url(logoUni2.png);
+    background-size: contain;
+    position: fixed;
+    background-repeat: no-repeat;
+    background-position: right bottom;
+}
+ 
+
+        #col,
+        #col2 {
+            position: fixed;
+
+            background: transparent;
+            color: transparent;
+            border: none;
+            border: none;
+            z-index: 4;
+            opacity: 1;
+
+            font-size: 0px;
+            border-radius: 100%;
+
+        }
+
+
+   
+
+        #empezar img {
+            width: 50%;
+            left: 50%;
+            top: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+
+        #loading,
+        #video,
+        #empezar {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+
+            height: 100%;
+            z-index: 9;
+            background-repeat: no-repeat;
+            display: block;
+            background-size: cover;
+            background-color: black;
+            /*background-image: url();*/
+            background-position: center;
+        }
+
+
+        #loading {
+            display: block;
+              background-image: url(loading2.jpeg);
+            z-index:101;
+        }
+
+ 
+        #empezar {
+            background-color: #005024;
+            z-index: 102;
+            display: none;
+        }
+
+        #empezar:hover {
+            cursor: pointer;
+        }
+
+        #video {
+            display: none;
+            z-index: 99;
+            background: black !important;
+        }
+
+        #soloLandscape {
+
+            background-size: 30%;
+            background-color: #007441;
+            background-image: url(flip_phone_icon.png);
+            background-position: center;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+
+        @media(orientation:portrait) {
+
+            #soloLandscape {
+                display: block;
+            }
+        }
+
+           #canvas {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            background: black;
+
+
+        }
+
+        *{
+              touch-action:none;
+        }
+
+        body,
+        html {
+            margin: 0 auto;
+            background-color:black;
+            height:100.1%;
+        }
+    </style>
+
+<!-- write your code here -->
+</head>
+<body onload="init();" style="margin:0px;" >
+  <div id="soloLandscape"></div>
+
+  <div id="logo"></div>
+
+
+    <div id="empezar"><img src="comenzar_verde.gif"></div>
+
+    <div id="loading"></div>
+
+		<canvas   id="canvas" width="1136" height="640"></canvas>
+	
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<!--
+	NOTES:
+	1. All tokens are represented by '$' sign in the template.
+	2. You can write your code only wherever mentioned.
+	3. All occurrences of existing tokens will be replaced by their appropriate values.
+	4. Blank lines will be removed automatically.
+	5. Remove unnecessary comments before creating your template.
+-->
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<title>Arbol Navidad Magica Unicenter</title>
+<!-- write your code here -->
+<script src="jquery-3.1.1.js"></script>
+
+<script src="createjs.js"></script>
+<script src="arbol.js"></script>
+<script src="fb.js"></script> 
+
+
+<style>
+
+
+@font-face {
+    font-family: Baloo;
+    src: url(baloo.ttf);
+}
+
+
+
+
+#logo{
+width: 15%;
+    height: 16%;
+    z-index: 99;
+    display: block;
+    bottom: 0px;
+    right: 0px;
+    background-image: url(logoUni2.png);
+    background-size: contain;
+    position: fixed;
+    background-repeat: no-repeat;
+    background-position: right bottom;
+}
+ 
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            background: black;
+
+        }
+         #loading{
+          display:block;
+         }
+
+        #empezar img{
+          width:50%;
+          left: 50%;
+    top: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+        }
+
+
+        #loading,
+        #video , #empezar{
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+          
+            height: 100%;
+            z-index: 9;
+            background-repeat: no-repeat;
+            display: block;
+            background-size: cover;
+            background-color: black;
+            /*background-image: url();*/
+            background-position: center;
+        }
+
+
+        video{
+          display:none;
+        }
+  #loading     {
+            background-image: url(loading2.jpeg);
+        }
+        #empezar{
+             background-color: #005024;
+             z-index:100;
+             display:none;
+        }
+        #empezar:hover{
+          cursor:pointer;
+        }
+
+        #video{
+          display:none;
+          z-index:99;
+          background: black !important;
+        }
+
+        #soloLandscape {
+
+            background-size: 30%;
+            background-color: #007441;
+            background-image: url(flip_phone_icon.png);
+            background-position: center;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+
+        @media(orientation:portrait) {
+
+            #soloLandscape {
+                display: block;
+            }
+        }
+
+   
+        *{
+              touch-action:none;
+        }
+
+        body,
+        html {
+            margin: 0 auto;
+            background-color:black;
+            height:100.1%;
+        }
+
+
+</style>
+
+<script>
+
+var video, videocjs;
+var server="server/"
+
+  var adornos=[];
+var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
+function init() {
+
+    video = document.createElement('video');
+             video.onended=setup;
+            video.src = 'intro2.mp4';
+            video.id="video";
+           
+
+
+  canvas = document.getElementById("canvas");
+  anim_container = document.getElementById("animation_container");
+  dom_overlay_container = document.getElementById("dom_overlay_container");
+  images = images||{};
+  var loader = new createjs.LoadQueue(false);
+  loader.addEventListener("fileload", handleFileLoad);
+  loader.addEventListener("complete", handleComplete);
+  loader.loadManifest(lib.properties.manifest);
+}
+function handleFileLoad(evt) {  
+  if (evt.item.type == "image") { images[evt.item.id] = evt.result; } 
+}
+function handleComplete(evt) {
+
+  //This function is always called, irrespective of the content. You can use the variable "stage" after it is created in token create_stage.
+  var queue = evt.target;
+  var ssMetadata = lib.ssMetadata;
+  for(i=0; i<ssMetadata.length; i++) {
+    ss[ssMetadata[i].name] = new createjs.SpriteSheet( {"images": [queue.getResult(ssMetadata[i].name)], "frames": ssMetadata[i].frames} )
+  }
+
+
+    stage = new createjs.Stage(canvas);
+   
+            exportRoot = new lib.arbol();
+                createjs.Ticker.setFPS(lib.properties.fps);
+            createjs.Ticker.addEventListener("tick", gameLoop);
+
+              $("#empezar").show();
+                $("#empezar").click(function(){
+                      $("#empezar, #loading").hide();
+                    musica = new Audio('musica.mp3');
+                     musica.volume = 0.3;
+                     musica.muted=true;
+                     setTimeout(function(){$("#empezar").hide(); }, 300)
+                    musica.loop=true;
+                     musica.addEventListener('ended', function() {
+                          this.currentTime = 0.1;
+                          this.play();
+                      }, false);
+                      musica.play();    
+                      video.play();
+                    //  setTimeout(setup, video.duration*1000*1.2); //20% de changui
+                      videocjs=new createjs.Bitmap(video);
+
+                      //   videocjs.scaleX=videocjs.scaleY=1136/video.videoWidth; //pq el video es de 1280 de ancho
+                      stage.addChild(videocjs);
+                    
+           
+                 })
+
+
+
+  
+}
+
+
+function setup(){
+    document.getElementById("canvas").focus();
+     stage.enableMouseOver();
+  video.removeEventListener('ended', setup);
+
+
+   createjs.Touch.enable(stage, true, false);
+  video.webkitExitFullscreen();
+            stage.removeChild(videocjs);    
+           
+              console.log("setup")
+             stage.addChild(exportRoot);
+                video.src="final.mp4";
+             musica.muted=false;
+            musica.currentTime=0.1;
+stage.update();
+
+  canvas.addEventListener("dblclick", function(q){
+    console.log("canvas dblclick")
+       q.preventDefault();
+    q.stopPropagation();
+  })
+
+  stage.addEventListener("pressup", function(q){
+    console.log("mouse up");
+      q.preventDefault();
+    q.stopPropagation();
+
+  });
+  stage.addEventListener("mousedown", function(q){
+    //  q.preventDefault();
+   //q.stopPropagation();
+    console.log("stage mouse down")
+       if(stage.getObjectUnderPoint(q.stageX, q.stageY).parent.parent.bandera=="x"){
+          obj=stage.getObjectUnderPoint(q.stageX, q.stageY).parent.parent;
+       }else if(stage.getObjectUnderPoint(q.stageX, q.stageY).parent.bandera=="x"){
+          obj=stage.getObjectUnderPoint(q.stageX, q.stageY).parent;
+       }else{
+        console.log(-1)
+        return -1;
+       } 
+  
+      obj.removeAllEventListeners();
+      obj.addEventListener("pressmove", function(b){
+          obj.x=b.stageX-obj.nominalBounds.width/2//-obj.clickX;
+          obj.y=b.stageY-obj.nominalBounds.height/2//-obj.clickX;
+      }, false);
+ 
+  }, false); //event listener stage
+
+
+
+exportRoot.cerrar.addEventListener("click", cerrar);
+
+  exportRoot.objetos.botonPausa.addEventListener("click", parar);
+  exportRoot.objetos.botonPausa.visible=false;
+     exportRoot.objetos.ejecutar.addEventListener("click", ejecutar);
+  exportRoot.objetos.bajar.addEventListener("click", bajar);
+  exportRoot.objetos.undo.addEventListener("click", undo);
+  exportRoot.objetos.compartir.addEventListener("click", compartir);
+
+
+
+
+exportRoot.objetos.luz1.name="luz1";
+exportRoot.objetos.luz2.name="luz2";
+exportRoot.objetos.luz3.name="luz3";
+exportRoot.objetos.luz4.name="luz4";
+
+
+exportRoot.objetos.borla1.name="borla1";
+exportRoot.objetos.borla2.name="borla2";
+exportRoot.objetos.borla3.name="borla3";
+exportRoot.objetos.borla4.name="borla4";
+exportRoot.objetos.borla5.name="borla5";
+exportRoot.objetos.borla6.name="borla6";
+exportRoot.objetos.borla7.name="borla7";
+exportRoot.objetos.borla8.name="borla8";
+exportRoot.objetos.borla9.name="borla9";
+exportRoot.objetos.borla10.name="borla10";
+
+
+exportRoot.objetos.duende1.name="duende1";
+exportRoot.objetos.duende2.name="duende2";
+exportRoot.objetos.duende3.name="duende3";
+
+exportRoot.objetos.estrella1.name="estrella1";
+exportRoot.objetos.estrella2.name="estrella2";
+exportRoot.objetos.estrella3.name="estrella3";
+
+exportRoot.objetos.guirnalda.name="guirnalda";
+
+
+for(i=0;i<exportRoot.objetos.children.length;i++){
+  if(exportRoot.objetos.children[i].name!=null){
+    exportRoot.objetos.children[i].addEventListener("mousedown", clickear, true);
+    exportRoot.objetos.children[i].addEventListener("pressmove", draggear, true);
+      exportRoot.objetos.children[i].cursor = "pointer";
+
+  }
+}
+
+
+  for (i=0;i<exportRoot.objetos.children.length;i++){
+         try{  exportRoot.objetos.children[i].gotoAndStop(0);} catch(e){console.log(e)}
+      }  
+
+
+//  exportRoot.objetos.luz1.addEventListener("pressmove", draggear, true);
+ 
+
+}
+
+var adornoTemp;
+var ultimaImgBajada;
+
+function dejarAdorno(q){
+  console.log("dejarAdorno");
+}
+
+
+
+
+
+        function cerrar() {
+          
+            console.log("cerrar");
+           
+              video.onended=function(){
+                video.webkitExitFullscreen();
+                console.log("termino el video de cierre");
+                }
+
+         //     videocjs.scaleX=videocjs.scaleY=1136/video.videoWidth; //pq el video es de 1280 de ancho
+
+             stage.addChild(videocjs);
+         
+          //  createjs.Sound.stop("musica");
+            //musica.autoplay=false;
+           
+            musica.muted=true;
+            musica.pause();
+           video.play();
+            stage.removeChild(exportRoot);
+    
+
+        }
+
+   
+
+
+function undo(){
+  console.log("undo ")
+  cual=adornos[adornos.length-1];
+  cual.parent.removeChild(cual)
+  adornos.splice(adornos.length-1,1);
+}
+
+
+  
+
+
+
+
+function clickear(q){
+
+  console.log("clickear");
+ if(q.target.parent.parent.name!=null){
+  eval("adornoTemp=new lib."+q.target.parent.parent.name+"();");
+
+ }else if(q.target.parent.name!=null){
+  eval("adornoTemp=new lib."+q.target.parent.name+"();");
+ }
+  
+
+  adornoTemp.gotoAndStop(0);
+  adornoTemp.cursor="pointer";
+  adornoTemp.bandera="x"; //variable bandera
+  adornoTemp.x=q.stageX-adornoTemp.nominalBounds.width/2;
+  adornoTemp.y=q.stageY-adornoTemp.nominalBounds.height/2;
+  exportRoot.addChild(adornoTemp);
+  adornos.push(adornoTemp);
+
+
+
+
+
+
+
+
+
+ 
+}
+
+var tiempoAlEjecutar, tiempoAlParar;
+
+function ejecutar(){
+
+   tiempoAlEjecutar=(new Date()).getTime();
+ if((tiempoAlEjecutar-tiempoAlParar)<1000) return -1;
+
+  console.log("ejecutar")
+exportRoot.objetos.botonPausa.visible=true;
+   exportRoot.objetos.ejecutar.visible=false;
+    
+  for (i=0;i<adornos.length;i++){
+    console.log(Math.floor(Math.random()*adornos[i].totalFrames))
+    adornos[i].gotoAndPlay(Math.floor(Math.random()*adornos[i].totalFrames));
+  }
+
+}
+function parar(){
+  tiempoAlParar=(new Date()).getTime();
+  if((tiempoAlParar-tiempoAlEjecutar)<1000) return -1;
+    console.log("pausa")
+
+  exportRoot.objetos.botonPausa.visible=false;
+  exportRoot.objetos.ejecutar.visible=true;
+
+  for (i=0;i<adornos.length;i++){
+    adornos[i].gotoAndStop(0);
+  }
+}
+
+function draggear(q){
+//console.log(q)
+//console.log(adornoTemp)
+ adornoTemp.x=q.rawX-30;
+ adornoTemp.y=q.rawY-30;
+
+}
+var ok=0;
+function gameLoop(){
+   try{
+                    if(videocjs.scaleX!=1136 / video.videoWidth){
+                      videocjs.scaleX = videocjs.scaleY = 1136 / video.videoWidth;
+                     console.log("ok!! videocjs.scaleX")
+                  }
+                }catch(e){}
+
+
+  stage.update();
+
+
+
+}
+</script>
+<!-- write your code here -->
+</head>
+<body onload="init();" style="margin:0px;">
+
+      <div id="soloLandscape"></div>
+
+
+     <div id="empezar"><img src="comenzar_verde.gif"></div>
+
+  <div id="logo"></div>
+
+
+    <div id="loading"></div>
+
+
+
+		<canvas id="canvas" width="1136" height="640" tabindex="1" ></canvas>
+	
+
+
+
+	
+
+
+</body>
+</html>

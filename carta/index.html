@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<!--
+    NOTES:
+    1. All tokens are represented by '$' sign in the template.
+    2. You can write your code only wherever mentioned.
+    3. All occurrences of existing tokens will be replaced by their appropriate values.
+    4. Blank lines will be removed automatically.
+    5. Remove unnecessary comments before creating your template.
+-->
+<html>
+
+<head>
+
+
+  <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, user-scalable=0, minimal-ui">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="jquery-3.1.1.js"></script>
+
+    <script src="createjs.js"></script>
+    <script src="jscolor.min.js"></script>
+    <title>Tu Carta a Papa Noel en Unicenter</title>
+    <!-- write your code here -->
+    <script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+    <script src="carta.js?1507918940927"></script>
+    <script src="fb.js?1507918940927"></script>
+
+
+    <style>
+
+    @font-face {
+    font-family: Baloo;
+    src: url(baloo.ttf);
+}
+
+
+
+#logo{
+width: 15%;
+    height: 16%;
+    z-index: 99;
+    display: block;
+    bottom: 0px;
+    right: 0px;
+    background-image: url(logoUni2.png);
+    background-size: contain;
+    position: fixed;
+    background-repeat: no-repeat;
+    background-position: right bottom;
+}
+
+        #col,
+        #col2 {
+            position: fixed;
+
+            background: transparent;
+            color: transparent;
+            border: none;
+            border: none;
+            z-index: 4;
+            opacity: 1;
+
+            font-size: 0px;
+            border-radius: 100%;
+
+        }
+
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            background: black;
+
+        }
+
+        body,
+        html {
+            margin: 0 auto;
+        }
+
+        #loading {
+            display: block;
+        }
+
+        #empezar img {
+            width: 50%;
+            left: 50%;
+            top: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+
+        #loading,
+        #video,
+        #empezar {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9;
+            background-repeat: no-repeat;
+            display: block;
+            background-size: cover;
+            background-color: black;
+            /*background-image: url();*/
+            background-position: center;
+        }
+
+        #loading {
+            background-image: url(loading2.jpeg);
+        }
+
+        #empezar {
+            background-color: #005024;
+            z-index: 100;
+            display: none;
+        }
+
+        #empezar:hover {
+            cursor: pointer;
+        }
+
+        #video {
+            display: none;
+            z-index: 99;
+            background: black !important;
+        }
+
+        #soloLandscape {
+
+            background-size: 30%;
+            background-color: #007441;
+            background-image: url(flip_phone_icon.png);
+            background-position: center;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            background-repeat: no-repeat;
+            display: none;
+        }
+
+
+        @media(orientation:portrait) {
+
+            #soloLandscape {
+                display: block;
+            }
+        }
+
+        * {
+            overflow: hidden;
+        }
+    </style>
+
+    <script>
+        var server = "server/";
+        var txt, label, shape, oldX, oldY, size, color;
+        var intervalUpdate, mascara;
+        var drawing, colorTexto;
+        var lastPoint, botonera, fondo;
+        var picker, wrapper;
+        var objectsunder;
+        var brushActivo = "pincel";
+        var goma = false;
+        var dibujando;
+        var orientacion=null;
+        var cantInstructions;
+        var cantInstructionsOld;
+        var instr = [];
+        var pintar;
+        var lastShape, currentShape;
+        var oldMidX, oldMidY, oldX, oldY;
+        var ctx;
+        var tutorial;
+        var stageG;
+        var video, videocjs, musica;
+
+        var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
+
+        function init() {
+           
+            video = document.createElement('video');
+            video.onended = setup;
+            video.src = 'intro3.mp4';
+            video.id = "video";
+
+
+            canvas = document.getElementById("canvas");
+            anim_container = document.getElementById("animation_container");
+            dom_overlay_container = document.getElementById("dom_overlay_container");
+            images = images || {};
+            var loader = new createjs.LoadQueue(false);
+            loader.addEventListener("fileload", handleFileLoad);
+            loader.addEventListener("complete", handleComplete);
+            loader.loadManifest(lib.properties.manifest);
+        }
+
+        function handleFileLoad(evt) {
+            if (evt.item.type == "image") {
+                images[evt.item.id] = evt.result;
+            }
+        }
+
+        function handleComplete(evt) {
+
+            //This function is always called, irrespective of the content. You can use the variable "stage" after it is created in token create_stage.
+            var queue = evt.target;
+            var ssMetadata = lib.ssMetadata;
+            for (i = 0; i < ssMetadata.length; i++) {
+                ss[ssMetadata[i].name] = new createjs.SpriteSheet({
+                    "images": [queue.getResult(ssMetadata[i].name)],
+                    "frames": ssMetadata[i].frames
+                })
+            }
+
+
+
+
+            //stage lo defino aca por un bug de createjs, sino no anda lo de dibujar
+            var stageP = new createjs.Stage(canvas);
+            createjs.Touch.enable(stageP, true, false);
+            stage = stageP;
+            createjs.Ticker.setFPS(lib.properties.fps);
+            createjs.Ticker.addEventListener("tick", gameLoop);
+
+
+
+            $("#empezar").show();
+            $("#empezar").click(function() {
+                $("#empezar, #loading").hide();
+                musica = new Audio('musica.mp3');
+                musica.volume = 0.3;
+                musica.muted = true;
+                setTimeout(function() {
+                    $("#empezar").hide();
+                }, 300)
+                musica.loop = true;
+                musica.addEventListener('ended', function() {
+                    this.currentTime = 0.1;
+                    this.play();
+                }, false);
+
+                musica.play();
+                video.play();   
+                //  setTimeout(setup, video.duration*1000*1.2); //20% de changui
+                videocjs = new createjs.Bitmap(video);
+     
+
+              stage.update();
+
+                stage.addChild(videocjs);
+
+
+            }) //click;
+
+
+
+
+        }
+
+           
+    function gameLoop(e){
+            
+                try{
+                    if(videocjs.scaleX!=1136 / video.videoWidth){
+                      videocjs.scaleX = videocjs.scaleY = 1136 / video.videoWidth;
+                     console.log("ok!! videocjs.scaleX")
+                  }
+                }catch(e){}
+              
+        stage.update();
+    }
+
+        function cambiarTexto() {
+            txt.texto.text = prompt("texto nuevo", txt.texto.text);
+        }
+
+
+        function setup() {
+
+
+     video.removeEventListener('ended', setup);
+
+            stage.enableMouseOver();
+            video.webkitExitFullscreen();
+            video.src = "final3.mp4"; //desde aca va argando el siguiente video
+            stage.removeChild(videocjs);
+            canvas.addEventListener("dblclick", function(q) {
+                console.log("canvas dblclick")
+                q.preventDefault();
+                q.stopPropagation();
+            })
+
+            musica.muted=false;
+            console.log("setup")
+
+            createjs.Touch.enable(stage, true, false);
+            pintar = new lib.pintar();
+
+            txt = pintar.txt;
+            txt.texto.text="";
+
+            fondo = new lib.fondo();
+            botonera = pintar.botonera;
+            stage.addChild(fondo);
+
+
+            wrapper = new createjs.Container();
+            wrapper.hitArea = new createjs.Shape(new createjs.Graphics().f("#000").dr(257, 60, 660, 561));
+            mascara = new lib.mascara();
+          // mascara.shape.x+=70;
+         //  mascara.shape.y+=5;
+            wrapper.mask = mascara.shape;
+
+            stage.addChild(wrapper);
+            stage.addChild(txt)
+            stage.addChild(botonera);
+
+
+
+            lastPoint = new createjs.Point();
+
+            drawing = new createjs.Shape();
+            wrapper.addChild(drawing)
+            wrapper.cache(0, 0, 11636, 640);
+
+            botonera.grosoresPincel.alpha = 0;
+            botonera.grosoresGoma.alpha = 0;
+            picker = new jscolor(document.getElementById("col"));
+            picker2 = new jscolor(document.getElementById("col2"));
+
+            color = "#000000";
+            grosor = 10;
+
+            botonera.cerrar.addEventListener("mousedown", cerrar);
+
+            botonera.grosoresPincel.grosor5.addEventListener("mousedown", function() {
+                grosor = 40;
+                createjs.Tween.get(botonera.grosoresPincel)
+                    .to({
+                        alpha: 0
+                    }, 200);
+
+            });
+
+              botonera.grosoresGoma.grosor5.addEventListener("mousedown", function() {
+                grosor = 40;
+                createjs.Tween.get(botonera.grosoresGoma)
+                    .to({
+                        alpha: 0
+                    }, 200);
+
+            });
+
+                   botonera.grosoresGoma.grosor3.addEventListener("mousedown", function() {
+                grosor = 20;
+                createjs.Tween.get(botonera.grosoresGoma)
+                    .to({
+                        alpha: 0
+                    }, 200);
+
+            });
+
+                botonera.grosoresGoma.grosor1.addEventListener("mousedown", function() {
+                grosor = 12;
+                createjs.Tween.get(botonera.grosoresGoma)
+                    .to({
+                        alpha: 0
+                    }, 200);
+
+            });
+
+            /*   botonera.grosoresPincel.grosor4.addEventListener("mousedown", function() {
+                   grosor = 30;
+                   createjs.Tween.get(botonera.grosoresPincel)
+                       .to({
+                           alpha: 0
+                       }, 200);
+
+               });*/
+
+
+            botonera.grosoresPincel.grosor3.addEventListener("mousedown", function() {
+                grosor = 20;
+                createjs.Tween.get(botonera.grosoresPincel)
+                    .to({
+                        alpha: 0
+                    }, 200);
+            });
+
+            /*   botonera.grosoresPincel.grosor2.addEventListener("mousedown", function() {
+                   grosor = 10;
+                   createjs.Tween.get(botonera.grosoresPincel)
+                       .to({
+                           alpha: 0
+                       }, 200);
+               });*/
+
+
+            botonera.grosoresPincel.grosor1.addEventListener("mousedown", function() {
+                grosor = 5;
+                createjs.Tween.get(botonera.grosoresPincel)
+                    .to({
+                        alpha: 0
+                    }, 200);
+            });
+
+            botonera.grosoresPincel.grosor0.addEventListener("mousedown", function() {
+                console.log("grosor 0 pincel")
+                createjs.Tween.get(botonera.grosoresPincel)
+                    .to({
+                        alpha: 0
+                    }, 200);
+            });
+
+             botonera.grosoresGoma.grosor0.addEventListener("mousedown", function() {
+                console.log("grosor 0 goma")
+                createjs.Tween.get(botonera.grosoresGoma)
+                    .to({
+                        alpha: 0
+                    }, 200);
+            });
+
+
+
+            botonera.pincel.addEventListener("mousedown", function() {
+
+                
+                brushActivo = "pincel";
+                goma = false;
+                console.log("click boton grosor");
+                if(botonera.grosoresPincel.alpha==0){
+                      createjs.Tween.get(botonera.grosoresPincel).to({
+                        alpha: 100
+                      }, 200);
+                }else{
+                    createjs.Tween.get(botonera.grosoresPincel).to({
+                        alpha: 0
+                      }, 200);
+                }
+              
+            });
+
+
+            document.getElementById("col").addEventListener("input", function() {
+                color = $("#col").val();
+                goma=false;
+
+            }, false);
+
+
+
+            botonera.botonColor.addEventListener("mousedown", function() {
+                //botonera.botonColor.play();
+                console.log("click boton color");
+                //$("#col").click();
+
+
+
+                setTimeout(function() {
+                    picker.show();
+                }, 50);
+
+
+
+
+                //color="#"+(parseInt(Math.random()*4294729)).toString(16);
+            });
+
+            botonera.colorTexto.addEventListener("mousedown", function() {
+                console.log("colorText click")
+                setTimeout(function() {
+                    picker2.show();
+                }, 50);
+
+
+
+            });
+            botonera.texto.addEventListener("mousedown", cambiarTexto);
+
+            botonera.goma.addEventListener("mousedown", function() {
+                 //botonera.botonColor.play();
+                     console.log("click boton goma ");
+                  goma = true;
+                  brushActivo = "pincel";
+
+                  if(botonera.grosoresGoma.alpha==0){
+                          createjs.Tween.get(botonera.grosoresGoma).to({
+                       alpha: 100
+                        }, 200);
+                  }else{
+                      createjs.Tween.get(botonera.grosoresGoma).to({
+                       alpha: 0
+                        }, 200);
+                  }
+            
+
+
+               //$("#col").click();
+
+                   //color="#"+(parseInt(Math.random()*4294729)).toString(16);
+             });
+
+
+            botonera.bajarImg.addEventListener("mousedown", bajar);
+            botonera.compartir.addEventListener("mousedown", compartir);
+
+
+
+
+            wrapper.addEventListener("mousedown", function(event) {
+                dibujando = true;
+                console.log("mousedown wrapper")
+
+                // Store the position. We have to do this because we clear the graphics later.
+                lastPoint.x = event.stageX;
+                lastPoint.y = event.stageY;
+
+                // Listen for mousemove
+            });
+
+
+            stage.addEventListener("stagemouseup", function(event) {
+                dibujando = false;
+            });
+            wrapper.addEventListener("pressmove", function(event) {
+                //console.log("mousemove wrapper")
+
+
+
+
+                // Draw onto the canvas, and then update the container cache.
+
+
+
+                if (goma ) {
+
+                    drawing.graphics.ss(grosor, "round").s(color);
+                    drawing.graphics.mt(lastPoint.x, lastPoint.y);
+                    drawing.graphics.lt(event.stageX, event.stageY);
+                    wrapper.updateCache("destination-out");
+
+                } else {
+                 
+                        drawing.graphics.ss(grosor, "round").s(color);
+                        drawing.graphics.mt(lastPoint.x, lastPoint.y);
+                        drawing.graphics.lt(event.stageX, event.stageY);
+                        wrapper.updateCache("source-over");
+                    
+
+
+
+                }
+
+                // Update the last position for next move.
+                lastPoint.x = event.stageX;
+                lastPoint.y = event.stageY;
+
+
+                drawing.graphics.clear();
+            });
+
+
+
+            verOrientacion();
+        } //setup
+
+
+
+        function random_rgb() {
+            var o = Math.round,
+                r = Math.random,
+                s = 255;
+            return 'rgb(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ')';
+        }
+
+        function cambioDeColor() {
+            console.log("cambio de color")
+            color = picker.toRGBString();
+            picker.hide();
+            goma=false;
+        }
+
+
+
+
+        function cerrar() {
+
+            console.log("cerrar");
+            
+            video.onended = function() {
+                video.webkitExitFullscreen();
+                console.log("termino el video de cierre");
+            }
+
+            
+     stage.removeAllChildren();
+            stage.addChild(videocjs);
+    
+
+            //  createjs.Sound.stop("musica");
+            //musica.autoplay=false;
+
+            musica.muted = true;
+            musica.pause();
+            video.play();
+        
+        
+
+              stage.update();
+
+        }
+
+
+
+        function cambioDeColor2() {
+            console.log("cambio de color2")
+            txt.texto.color = picker2.toRGBString()
+            picker2.hide();
+        }
+
+     
+
+
+        function undo() {
+            b = wrapper
+            b.removeChildAt(b.children.length - 1);
+            // stage.update();   
+        }
+
+         
+
+        function verOrientacion(){
+            if(window.innerWidth>window.innerHeight){
+            //es landscape
+                orientacion="landscape";
+            }else{
+                orientacion="portrait";
+            }
+
+            try{
+                     document.getElementById("col").style.left = Math.floor(botonera.botonColor.x*100/1136)+"%";
+            document.getElementById("col").style.top = Math.floor(botonera.botonColor.y *100/640)+ "%";
+
+
+            document.getElementById("col2").style.left = Math.floor(botonera.colorTexto.x *100/1136)+"%";
+            document.getElementById("col2").style.top = Math.floor((botonera.colorTexto.y*1.1) *100/640)+ "%";
+        }catch(e){
+            console.log(e)
+        }
+
+       
+
+
+        }
+
+    window.addEventListener("resize", verOrientacion, false);
+
+
+    </script>
+
+</head>
+
+<body onload="init();" style="margin:0px;">
+
+    <div id="soloLandscape"></div>
+
+
+    <div id="empezar"><img src="comenzar_verde.gif"></div>
+
+    <div id="loading"></div>
+
+  <div id="logo"></div>
+
+    <input class="jscolor2" id="col" name="col" onchange="cambioDeColor()"></button>
+    <input class="jscolor2" id="col2" name="col2" onchange="cambioDeColor2()"></button>
+
+    <canvas id="canvas" width="1136" height="640"></canvas>
+    <div id="dom_overlay_container" style="pointer-events:none; overflow:hidden; width:1136px; height:640px; position: absolute; left: 0px; top: 0px; display: block;">
+    </div>
+    </div>
+</body>
+
+</html>
